@@ -197,6 +197,20 @@
             object-fit: contain;
             background: #000;
         }
+        
+        .player-status-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 600;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+            z-index: 5;
+        }
 
         .player-overlay {
             position: absolute;
@@ -537,6 +551,7 @@
                 <!-- Video Screen -->
                 <div class="player-wrapper">
                     <video id="hlsVideoPlayer" controls autoplay></video>
+                    <div id="playerStatusOverlay" class="player-status-overlay">লোড হচ্ছে...</div>
                     <div class="player-overlay">
                         <button class="icon-btn text-white bg-dark border-secondary" id="pipBtn" title="Picture-in-Picture">
                             <i class="fas fa-compress-alt"></i>
@@ -622,7 +637,6 @@
                         <small class="text-muted">আপনার মূল্যবান সাপোর্ট আমাদের সাইটটিকে সবসময় সচল রাখতে সাহায্য করবে।</small>
                     </p>
                     <div class="d-flex justify-content-center gap-3">
-                        <!-- এখানে আপনার Adsterra Direct Link (বিজ্ঞাপন) যুক্ত করবেন -->
                         <a href="https://www.example.com/adsterra-direct-link" target="_blank" class="btn btn-primary px-4 rounded-pill fw-bold shadow-sm" onclick="closeWelcomeModal()" style="background: var(--accent-glow); border: none;">
                             <i class="fas fa-heart me-1"></i> বিজ্ঞাপন দেখে সহযোগিতা করুন
                         </a>
@@ -663,10 +677,12 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div id="adminNotification" class="alert alert-info small py-2 d-none"></div>
+                    
                     <!-- Add Stream Server Section -->
                     <form id="addServerForm" class="row g-2 mb-4">
                         <div class="col-md-3">
-                            <input type="text" id="newServerName" class="form-control form-control-glass" placeholder="সার্ভারের নাম (যেমন: Server 2)" required>
+                            <input type="text" id="newServerName" class="form-control form-control-glass" placeholder="সার্ভারের নাম" required>
                         </div>
                         <div class="col-md-7">
                             <input type="url" id="newServerUrl" class="form-control form-control-glass" placeholder="M3U8 / HLS Stream লিংক দিন..." required>
@@ -709,7 +725,7 @@
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // 1. Firebase Live-Data configuration
+        // 1. Core Configurations
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBzoFA-IKTGJAGDTwGdKKGeFflAnQNkwOQ",
@@ -721,27 +737,17 @@
             measurementId: "G-BQVNP1KC3E"
         };
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'fifaworldcup2026-c7fed';
-
-        let app, auth, db;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch(e) {
-            console.error("Firebase Initialization Failed: ", e);
-        }
-
-        // Real-time Storage Structures (MANDATORY RULES Compliance)
+        const appId = 'fifaworldcup2026-c7fed';
         const serversCollectionPath = `artifacts/${appId}/public/data/servers`;
         const chatCollectionPath = `artifacts/${appId}/public/data/chatMessages`;
 
-        let currentUser = null;
+        let app, auth, db, currentUser = null;
         let hlsEngine = null;
         let selectedServerId = null;
 
-        // আপনার দেওয়া লাইভ ভিডিও লিংকটি প্রাইমারি ও ডিফল্ট হিসেবে অটো-লোড হবে
+        // Default Primary Server
         const defaultPrimaryServer = {
+            id: 'default_server_1',
             name: 'Server 1 (Main HD)',
             url: 'https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8',
             createdAt: 1000000000000, 
@@ -752,32 +758,53 @@
 
         // DOM Elements Binding
         const videoElement = document.getElementById('hlsVideoPlayer');
+        const playerStatus = document.getElementById('playerStatusOverlay');
         const serverButtonsContainer = document.getElementById('serverButtonsList');
         const chatMessageWrapper = document.getElementById('chatMessageWrapper');
         const viewerCountElement = document.getElementById('liveViewerCount');
         const adminServerListUI = document.getElementById('adminServerList');
+        const adminNotif = document.getElementById('adminNotification');
 
-        // Anonymous Authorization Sequence (Rule 3)
-        const initAuth = async () => {
-            if(!auth) return;
-            try {
-                let userCredential;
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    userCredential = await signInAnonymously(auth);
-                }
-                currentUser = userCredential.user;
-                if (currentUser) {
-                    initializeRealtimeListeners();
-                    simulateLiveViewers();
-                }
-            } catch (error) {
-                console.error("Firebase Auth Error: ", error);
+        // ==========================================
+        // Local Storage Fallback Setup
+        // ==========================================
+        function loadLocalServers() {
+            const saved = localStorage.getItem('fifa_local_servers');
+            if(saved) {
+                return JSON.parse(saved);
             }
-        };
+            return [defaultPrimaryServer];
+        }
 
-        initAuth();
+        function saveLocalServers(list) {
+            localStorage.setItem('fifa_local_servers', JSON.stringify(list));
+        }
+
+        // Initialize from local storage first to prevent empty screen
+        serversList = loadLocalServers();
+        renderServerButtons();
+        renderAdminServerList();
+
+        // ==========================================
+        // Firebase Initialization
+        // ==========================================
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            
+            // Authenticate Anonymously
+            signInAnonymously(auth).then((userCredential) => {
+                currentUser = userCredential.user;
+                initializeRealtimeListeners();
+            }).catch((error) => {
+                console.warn("Firebase Auth Error, using Local Storage mode: ", error);
+            });
+        } catch(e) {
+            console.warn("Firebase Init Failed, using Local Storage mode: ", e);
+        }
+
+        simulateLiveViewers();
 
         // ==========================================
         // 2. Realtime Synchronization Processes
@@ -793,7 +820,7 @@
                         tempServers.push({ id: doc.id, ...doc.data() });
                     });
 
-                    // ফায়ারবেস ডেটাবেস একদম প্রথমবার নতুন খোলা থাকলে ডিফল্ট সার্ভার আপলোড করবে
+                    // Seed default server if database is empty
                     if (tempServers.length === 0) {
                         try {
                             const initialDocRef = doc(collection(db, ...serversCollectionPath.split('/')));
@@ -804,17 +831,12 @@
                         }
                     }
                     
-                    // Sort locally based on creation key (Rule 2 Compliance)
                     tempServers.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
                     serversList = tempServers;
+                    saveLocalServers(serversList); // Update Local Fallback
                     
                     renderServerButtons();
                     renderAdminServerList();
-
-                    // Play active or first default server on page load
-                    if(serversList.length > 0 && !hlsEngine && !videoElement.src) {
-                        playStream(serversList[0].url, serversList[0].id);
-                    }
                 },
                 (error) => console.error("Error fetching servers: ", error)
             );
@@ -827,7 +849,6 @@
                         messages.push({ id: doc.id, ...doc.data() });
                     });
                     
-                    // Sort messages in-memory securely (Rule 2 Compliance)
                     messages.sort((a, b) => {
                         const tA = a.timestamp ? a.timestamp.toMillis() : Date.now();
                         const tB = b.timestamp ? b.timestamp.toMillis() : Date.now();
@@ -892,7 +913,7 @@
         }
 
         // ==========================================
-        // 4. Video Playback Controllers (HLS)
+        // 4. Robust Video Playback Controllers (HLS)
         // ==========================================
         function playStream(url, serverId) {
             selectedServerId = serverId;
@@ -901,13 +922,11 @@
                 if(btn.getAttribute('data-id') === serverId) btn.classList.add('active');
             });
 
+            playerStatus.style.display = 'block';
+            playerStatus.textContent = "সার্ভার লোড হচ্ছে...";
+
             if (hlsEngine) {
                 hlsEngine.destroy();
-                if(hlsEngine.media) {
-                    hlsEngine.media.pause();
-                    hlsEngine.media.removeAttribute('src');
-                    hlsEngine.media.load();
-                }
                 hlsEngine = null;
             }
 
@@ -915,12 +934,41 @@
                 hlsEngine = new Hls({ maxMaxBufferLength: 30 });
                 hlsEngine.loadSource(url);
                 hlsEngine.attachMedia(videoElement);
+                
                 hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => {
+                    playerStatus.style.display = 'none';
                     videoElement.play().catch(e => console.log("Stream autoplay blocked."));
                 });
+
+                // Error Handling for Dead Links or CORS Block
+                hlsEngine.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                playerStatus.textContent = "নেটওয়ার্ক সমস্যা! লিংকটি কাজ করছে না।";
+                                hlsEngine.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                hlsEngine.recoverMediaError();
+                                break;
+                            default:
+                                playerStatus.textContent = "এই সার্ভার লিংকটি বর্তমানে বন্ধ আছে বা সাপোর্ট করছে না।";
+                                hlsEngine.destroy();
+                                break;
+                        }
+                    }
+                });
+
             } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
                 videoElement.src = url;
-                videoElement.addEventListener('loadedmetadata', () => videoElement.play());
+                videoElement.addEventListener('loadedmetadata', () => {
+                    playerStatus.style.display = 'none';
+                    videoElement.play();
+                });
+                videoElement.addEventListener('error', () => {
+                    playerStatus.style.display = 'block';
+                    playerStatus.textContent = "ব্রাউজার এই লিংকটি সাপোর্ট করছে না!";
+                });
             }
         }
 
@@ -943,26 +991,28 @@
         // ==========================================
         document.getElementById('chatForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!currentUser || !db) return;
-
             const nameInput = document.getElementById('chatName');
             const msgInput = document.getElementById('chatMsg');
-            
             const name = nameInput.value.trim();
             const text = msgInput.value.trim();
             
             if(!name || !text) return;
 
-            try {
-                await addDoc(collection(db, ...chatCollectionPath.split('/')), {
-                    senderName: name,
-                    text: text,
-                    uid: currentUser.uid,
-                    timestamp: new Date() 
-                });
-                msgInput.value = ''; 
-            } catch(err) {
-                console.error("Failed to post comment: ", err);
+            if(currentUser && db) {
+                try {
+                    await addDoc(collection(db, ...chatCollectionPath.split('/')), {
+                        senderName: name,
+                        text: text,
+                        uid: currentUser.uid,
+                        timestamp: new Date() 
+                    });
+                    msgInput.value = ''; 
+                } catch(err) {
+                    console.error("Failed to post comment: ", err);
+                    alert("কমেন্ট করতে সমস্যা হচ্ছে! ফায়ারবেস রুলস চেক করুন।");
+                }
+            } else {
+                alert("লাইভ চ্যাটের জন্য ফায়ারবেস সঠিকভাবে কানেক্ট হয়নি!");
             }
         });
 
@@ -972,6 +1022,13 @@
         const adminPass = "iptv@1122";
         const adminAuthModal = new bootstrap.Modal(document.getElementById('adminAuthModal'));
         const adminDashboardModal = new bootstrap.Modal(document.getElementById('adminDashboardModal'));
+
+        function showAdminNotif(msg, isError=false) {
+            adminNotif.className = `alert ${isError ? 'alert-warning' : 'alert-success'} small py-2`;
+            adminNotif.textContent = msg;
+            adminNotif.classList.remove('d-none');
+            setTimeout(() => adminNotif.classList.add('d-none'), 4000);
+        }
 
         document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -990,23 +1047,38 @@
 
         document.getElementById('addServerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!currentUser || !db) return;
-
             const name = document.getElementById('newServerName').value.trim();
             const url = document.getElementById('newServerUrl').value.trim();
-
             if(!name || !url) return;
 
-            try {
-                await addDoc(collection(db, ...serversCollectionPath.split('/')), {
-                    name: name,
-                    url: url,
-                    createdAt: Date.now()
-                });
-                document.getElementById('newServerName').value = '';
-                document.getElementById('newServerUrl').value = '';
-            } catch(err) {
-                console.error("Server Insertion Failed: ", err);
+            const newServerObj = {
+                id: 'server_' + Date.now(),
+                name: name,
+                url: url,
+                createdAt: Date.now(),
+                isPrimary: false
+            };
+
+            // Optimistic Local Save (Works immediately even if Firebase fails)
+            serversList.push(newServerObj);
+            saveLocalServers(serversList);
+            renderServerButtons();
+            renderAdminServerList();
+            
+            document.getElementById('newServerName').value = '';
+            document.getElementById('newServerUrl').value = '';
+
+            // Try Firebase Sync
+            if(currentUser && db) {
+                try {
+                    await addDoc(collection(db, ...serversCollectionPath.split('/')), newServerObj);
+                    showAdminNotif("সার্ভার সফলভাবে যুক্ত হয়েছে!");
+                } catch(err) {
+                    showAdminNotif("ফায়ারবেস কাজ করছে না, তাই অফলাইনে ব্রাউজারে সেভ হয়েছে!", true);
+                    console.error("Server Insertion Failed: ", err);
+                }
+            } else {
+                showAdminNotif("ফায়ারবেস কানেক্ট নেই, অফলাইনে সেভ হয়েছে!", true);
             }
         });
 
@@ -1029,13 +1101,23 @@
                 `;
                 
                 tr.querySelector('button').addEventListener('click', async (e) => {
-                    if(!db) return;
                     const id = e.currentTarget.getAttribute('data-id');
                     if(confirm("আপনি কি নিশ্চিত যে এই লাইভ সার্ভারটি ডিলিট করতে চান?")) {
-                        try {
-                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'servers', id));
-                        } catch(err) {
-                            console.error("Server deletion error: ", err);
+                        
+                        // Delete locally first
+                        serversList = serversList.filter(s => s.id !== id);
+                        saveLocalServers(serversList);
+                        renderServerButtons();
+                        renderAdminServerList();
+
+                        // Sync with Firebase
+                        if(currentUser && db) {
+                            try {
+                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'servers', id));
+                                showAdminNotif("সার্ভার সফলভাবে ডিলিট হয়েছে!");
+                            } catch(err) {
+                                console.error("Server deletion error: ", err);
+                            }
                         }
                     }
                 });
@@ -1104,8 +1186,7 @@
             const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeAdModal'));
             welcomeModal.show();
 
-            renderServerButtons();
-            renderAdminServerList();
+            // Load primary video if exist in local storage
             if(!hlsEngine && !videoElement.src && serversList.length > 0) {
                 playStream(serversList[0].url, serversList[0].id);
             }
