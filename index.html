@@ -1,1197 +1,340 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="FIFA WORLD CUP 2026 - Live Broadcast | Free Stream">
-    <link rel="shortcut icon" href="https://placehold.co/16x16/10b981/ffffff?text=FIFA"/>
-    <title>FIFA WORLD CUP 2026 | Live Broadcast</title>
-    
-    <!-- CSS Libraries -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- HLS Playback Engine -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+    <title>FIFA FHD by Raytur Rahaman</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
     <style>
-        :root {
-            /* FIFA Sports Theme (Dark Mode Default) */
-            --bg-primary: #08080c;
-            --bg-secondary: #11111a;
-            --accent-glow: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-            --accent-color: #3b82f6;
-            --accent-hover: #2563eb;
-            --text-main: #f8fafc;
-            --glass-bg: rgba(17, 17, 26, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --danger-color: #ef4444;
-            
-            /* Light Theme Variables */
-            --bg-light-primary: #f1f5f9;
-            --bg-light-secondary: #ffffff;
-            --text-light-main: #0f172a;
-            --glass-light-bg: rgba(255, 255, 255, 0.85);
-            --glass-light-border: rgba(0, 0, 0, 0.1);
-            
-            /* Dynamic State Variables */
-            --current-bg: var(--bg-primary);
-            --current-card: var(--bg-secondary);
-            --current-text: var(--text-main);
-            --current-glass: var(--glass-bg);
-            --current-border: var(--glass-border);
-            
-            --transition: all 0.3s ease;
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #050505; overflow: hidden; font-family: 'Hind Siliguri', 'Inter', sans-serif; color: #fff; }
+        .video-js { width: 100% !important; height: 100% !important; background-color: transparent; }
+
+        /* =========================================
+           ULTRA PREMIUM CONTROL BAR
+           ========================================= */
+        .video-js .vjs-control-bar {
+            background: rgba(18, 18, 18, 0.85) !important;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 40px !important;
+            bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important;
+            width: calc(100% - 60px) !important; max-width: 850px !important; height: 56px !important;
+            display: flex !important; align-items: center !important; padding: 0 15px !important;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        body.light-theme {
-            --current-bg: var(--bg-light-primary);
-            --current-card: var(--bg-light-secondary);
-            --current-text: var(--text-light-main);
-            --current-glass: var(--glass-light-bg);
-            --current-border: var(--glass-light-border);
+        .video-js .vjs-button { width: 44px !important; height: 44px !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 50% !important; margin: 0 4px !important; transition: all 0.2s ease; background: transparent !important; }
+        .video-js .vjs-button:hover { background: rgba(255, 255, 255, 0.15) !important; }
+        .video-js .vjs-icon-placeholder:before { font-size: 1.6em !important; line-height: 1 !important; display: flex; align-items: center; justify-content: center; }
+        .video-js .vjs-volume-panel { display: flex !important; align-items: center !important; width: auto !important; }
+        .video-js .vjs-volume-panel .vjs-volume-control { display: flex !important; align-items: center !important; height: 100% !important; }
+        .video-js .vjs-picture-in-picture-control { margin-left: auto !important; }
+
+        /* Custom LIVE Badge */
+        .video-js .vjs-live-control {
+            width: auto !important; height: 32px !important; padding: 0 14px !important;
+            margin: 0 5px 0 10px !important; background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px !important;
+            display: flex !important; align-items: center !important; pointer-events: none;
+        }
+        .video-js .vjs-live-display {
+            font-size: 12px !important; font-weight: 700 !important; letter-spacing: 0.5px;
+            color: #ffffff !important; display: flex !important; align-items: center !important; text-transform: uppercase;
+        }
+        .video-js .vjs-live-display::before {
+            content: ''; display: inline-block; width: 8px; height: 8px;
+            background-color: #ff2a2a; border-radius: 50%; margin-right: 8px;
+            box-shadow: 0 0 8px rgba(255, 42, 42, 0.8); animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 42, 42, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 42, 42, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 42, 42, 0); }
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--current-bg);
-            color: var(--current-text);
-            margin: 0;
-            padding: 0;
-            transition: var(--transition);
-            min-height: 100vh;
-            overflow-x: hidden;
+        /* Live Viewer Counter Styling */
+        .vjs-view-counter {
+            display: flex !important; align-items: center !important;
+            color: #ff4d4d !important; font-size: 13px !important; font-weight: 600 !important;
+            background: rgba(255, 77, 77, 0.1) !important; padding: 0 12px !important;
+            height: 32px !important; border-radius: 20px !important;
+            border: 1px solid rgba(255, 77, 77, 0.2) !important; margin-left: 5px !important;
         }
+        .vjs-view-counter svg { margin-right: 6px; }
+        .vjs-progress-control, .vjs-current-time, .vjs-time-divider, .vjs-duration, .vjs-remaining-time { display: none !important; }
 
-        /* Background Visual Bloom Effect */
-        .glow-bg {
-            position: fixed;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 65%);
-            top: -15%;
-            right: -15%;
-            z-index: -1;
-            pointer-events: none;
+        /* Social Box */
+        .social-box {
+            position: absolute; top: 30px; left: 30px; z-index: 999;
+            display: flex; flex-direction: column; gap: 10px; background: rgba(15, 15, 15, 0.6);
+            backdrop-filter: blur(12px); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .social-btn { display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; color: #fff; text-decoration: none; transition: 0.3s; }
+        .btn-fb { background: rgba(24, 119, 242, 0.2); border: 1px solid rgba(24, 119, 242, 0.4); color: #6db0ff; }
+        .btn-fb:hover { background: #1877F2; color: #fff; }
+        .btn-tg { background: rgba(34, 158, 217, 0.2); border: 1px solid rgba(34, 158, 217, 0.4); color: #6fc8ff; }
+        .btn-tg:hover { background: #229ED9; color: #fff; }
+        .close-social { align-self: flex-end; background: transparent; border: none; color: #888; font-size: 16px; cursor: pointer; margin-bottom: -5px; margin-top: -5px; transition: 0.2s; }
+        .close-social:hover { color: #fff; }
 
-        /* Top Header Navigation */
-        .top-navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 12px 5%;
-            background: var(--current-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--current-border);
-            z-index: 1050;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: var(--transition);
+        /* Updated Server Box - Premium & Responsive */
+        .server-box { 
+            position: absolute; top: 30px; right: 30px; z-index: 999;
+            display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; 
+            background: rgba(15, 15, 15, 0.6); backdrop-filter: blur(12px);
+            padding: 8px 12px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-
-        .brand-logo {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            font-size: 1.4rem;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-
-        .brand-title {
-            background: var(--accent-glow);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .brand-subtitle {
-            font-size: 0.72rem;
-            color: #ef4444;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Live Counter Styling */
-        .live-badge {
-            background: rgba(239, 68, 68, 0.12);
-            border: 1px solid rgba(239, 68, 68, 0.25);
-            color: #ef4444;
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .pulse {
-            width: 7px;
-            height: 7px;
-            background-color: #ef4444;
-            border-radius: 50%;
-            animation: pulse-effect 1.5s infinite;
-        }
-
-        @keyframes pulse-effect {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
-        .icon-btn {
-            background: rgba(128, 128, 128, 0.08);
-            border: 1px solid var(--current-border);
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--current-text);
-            transition: var(--transition);
-        }
-
-        .icon-btn:hover {
-            background: rgba(128, 128, 128, 0.15);
-            transform: scale(1.05);
-        }
-
-        /* Main Workspace */
-        .main-container {
-            max-width: 1550px;
-            margin: 0 auto;
-            padding: 95px 20px 40px;
-        }
-
-        /* Professional Video Player Box */
-        .player-wrapper {
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-            border: 1px solid var(--current-border);
-            aspect-ratio: 16/9;
-            width: 100%;
-            position: relative;
-        }
-
-        .player-wrapper video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #000;
-        }
-        
-        .player-status-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: 600;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 8px;
-            display: none; /* Hidden by default */
-            z-index: 5;
-        }
-
-        .player-overlay {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 10;
-        }
-
-        /* Server Dynamic Switches */
-        .server-bar {
-            background: var(--current-glass);
-            border: 1px solid var(--current-border);
-            border-radius: 16px;
-            padding: 12px 18px;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .server-title {
-            font-weight: 700;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--current-text);
-        }
-
         .server-btn {
-            background: rgba(128, 128, 128, 0.08);
-            border: 1px solid var(--current-border);
-            color: var(--current-text);
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
+            background: transparent; color: #aaa; padding: 8px 16px;
+            border-radius: 30px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none;
         }
-
-        .server-btn:hover {
-            background: rgba(128, 128, 128, 0.15);
-        }
-
+        .server-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
         .server-btn.active {
-            background: var(--accent-glow);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+            background: #ff2a2a; color: #fff; box-shadow: 0 4px 15px rgba(255, 42, 42, 0.4); font-weight: 700;
         }
 
-        /* Real-time Interactive Chat */
-        .chat-panel {
-            background: var(--current-glass);
-            border: 1px solid var(--current-border);
-            border-radius: 16px;
-            padding: 18px;
-            margin-top: 15px;
-            height: 420px;
-            display: flex;
-            flex-direction: column;
-        }
+        /* Content Locker CSS */
+        #content-locker { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 99999; display: none; align-items: center; justify-content: center; }
+        .locker-box { background: linear-gradient(145deg, rgba(25, 25, 25, 0.95), rgba(12, 12, 12, 0.98)); border: 1px solid rgba(255, 255, 255, 0.05); padding: 50px 35px; border-radius: 30px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(24, 119, 242, 0.1), inset 0 1px 0 rgba(255,255,255,0.05); max-width: 420px; width: 90%; position: relative; overflow: hidden; animation: popIn 0.6s forwards; }
+        @keyframes popIn { 0% { transform: scale(0.8) translateY(20px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        .locker-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #1877F2, #00d2ff, #1877F2); box-shadow: 0 2px 15px rgba(0, 210, 255, 0.5); }
+        .lock-icon { background: linear-gradient(135deg, rgba(24, 119, 242, 0.15), rgba(0, 210, 255, 0.05)); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.2); animation: iconPulse 2s infinite; }
+        @keyframes iconPulse { 0% { box-shadow: 0 0 0 0 rgba(24, 119, 242, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(24, 119, 242, 0); } 100% { box-shadow: 0 0 0 0 rgba(24, 119, 242, 0); } }
+        .locker-box h2 { font-size: 26px; margin: 0 0 12px; color: #fff; font-weight: 700; }
+        .locker-box p { font-size: 17px; color: #a3a3a3; margin: 0 0 35px; line-height: 1.6; font-weight: 500; }
+        .locker-fb-btn { display: flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, #1877F2, #145dbf); color: #fff; padding: 16px 20px; border-radius: 16px; font-weight: 600; text-decoration: none; border: none; width: 100%; font-size: 18px; cursor: pointer; transition: all 0.3s ease; font-family: 'Hind Siliguri', sans-serif; }
+        .locker-fb-btn:hover { background: linear-gradient(135deg, #166fe5, #114e9f); transform: translateY(-3px); }
+        .countdown-text { font-size: 18px; font-weight: 600; color: #4CAF50; display: none; margin-top: 25px; background: rgba(76, 175, 80, 0.1); padding: 14px; border-radius: 12px; border: 1px solid rgba(76, 175, 80, 0.2); }
 
-        .chat-header {
-            border-bottom: 1px solid var(--current-border);
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-header h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-right: 8px;
-            margin-bottom: 12px;
-        }
-
-        .chat-msg {
-            background: rgba(128, 128, 128, 0.04);
-            border: 1px solid rgba(128, 128, 128, 0.08);
-            padding: 8px 12px;
-            border-radius: 10px;
-            animation: slide-up-anim 0.25s ease;
-        }
-
-        @keyframes slide-up-anim {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .chat-sender {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 3px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .chat-time {
-            font-size: 0.62rem;
-            color: gray;
-            font-weight: 400;
-        }
-
-        .chat-text {
-            font-size: 0.85rem;
-            line-height: 1.4;
-            word-break: break-word;
-        }
-
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-        }
-
-        .form-control-glass {
-            background: rgba(128, 128, 128, 0.04);
-            border: 1px solid var(--current-border);
-            color: var(--current-text);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.85rem;
-            transition: var(--transition);
-        }
-        
-        .form-control-glass:focus {
-            background: rgba(128, 128, 128, 0.08);
-            border-color: var(--accent-color);
-            color: var(--current-text);
-            box-shadow: none;
-            outline: none;
-        }
-
-        .btn-send {
-            background: var(--accent-glow);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 0 16px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: var(--transition);
-        }
-
-        .btn-send:hover {
-            transform: scale(1.02);
-        }
-
-        /* Business Boost Agency Advertisement */
-        .agency-card {
-            background: linear-gradient(165deg, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.25);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-            position: sticky;
-            top: 95px;
-            backdrop-filter: blur(10px);
-        }
-
-        .agency-badge {
-            background: var(--accent-glow);
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 12px;
-        }
-
-        .agency-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-bottom: 8px;
-            color: var(--current-text);
-        }
-
-        .agency-desc {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .service-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 24px;
-        }
-
-        .service-item {
-            background: rgba(128, 128, 128, 0.04);
-            border: 1px solid var(--current-border);
-            padding: 10px 12px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .service-item:hover {
-            border-color: var(--accent-color);
-            transform: translateX(4px);
-            background: rgba(59, 130, 246, 0.04);
-        }
-
-        .service-icon {
-            color: var(--accent-color);
-            font-size: 1rem;
-        }
-
-        .btn-agency-primary {
-            background: var(--accent-glow);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .btn-agency-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.3);
-            color: white;
-        }
-
-        /* Glassmorphic Modals Setup */
-        .glass-modal-content {
-            background: rgba(15, 15, 24, 0.96);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border-radius: 20px;
-        }
-        
-        body.light-theme .glass-modal-content {
-            background: rgba(255, 255, 255, 0.96);
-            color: #0f172a;
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-table {
-            color: var(--current-text);
-            font-size: 0.85rem;
-        }
-        .admin-table th, .admin-table td {
-            border-color: var(--current-border);
-            background: transparent;
-            color: inherit;
-        }
-
-        @media (max-width: 991px) {
-            .agency-card {
-                position: relative;
-                top: 0;
-                margin-top: 20px;
-            }
-        }
-        
+        /* =========================================
+           MOBILE RESPONSIVE ADJUSTMENTS 📱
+           ========================================= */
         @media (max-width: 768px) {
-            .live-badge span.text-hide-mobile {
-                display: none;
+            .social-box { top: 15px; left: 15px; padding: 10px; transform: scale(0.85); transform-origin: top left; }
+            
+            /* Server Box Mobile Placement */
+            .server-box { 
+                top: auto; bottom: 80px; right: 50%; transform: translateX(50%);
+                max-width: 95%; flex-direction: row; flex-wrap: nowrap;
+                justify-content: flex-start; overflow-x: auto; -webkit-overflow-scrolling: touch;
             }
-            .brand-logo {
-                font-size: 1.15rem;
+            .server-box::-webkit-scrollbar { display: none; }
+            .server-btn { white-space: nowrap; }
+
+            /* ✅ Control Bar & Fullscreen Button Fixes for Mobile */
+            .video-js .vjs-control-bar { 
+                width: 96% !important; /* জায়গা বাড়ানো হয়েছে */
+                bottom: 15px !important; 
+                height: 48px !important; 
+                padding: 0 5px !important; /* ভেতরের প্যাডিং কমানো হয়েছে */
             }
+            
+            /* বাটনের সাইজ মোবাইলের জন্য পারফেক্ট করা হয়েছে */
+            .video-js .vjs-button {
+                width: 36px !important; 
+                height: 36px !important; 
+                margin: 0 2px !important;
+            }
+            .video-js .vjs-icon-placeholder:before {
+                font-size: 1.4em !important;
+            }
+
+            /* Live Badge ও Counter সাইজ অ্যাডজাস্ট */
+            .video-js .vjs-live-control { 
+                margin: 0 2px 0 5px !important; 
+                padding: 0 8px !important; 
+                height: 28px !important; 
+            }
+            .vjs-view-counter { 
+                padding: 0 6px !important; 
+                font-size: 11px !important; 
+                height: 28px !important; 
+                margin-left: 2px !important; 
+            }
+            
+            .locker-box { padding: 40px 25px; }
+            .locker-box h2 { font-size: 22px; }
+            .locker-box p { font-size: 15px; }
         }
     </style>
 </head>
 <body>
-    <div class="glow-bg"></div>
 
-    <!-- Top Navigation Header -->
-    <header class="top-navbar">
-        <a href="#" class="brand-logo">
-            <span class="brand-title"><i class="fas fa-trophy me-1"></i>FIFA 2026</span>
-            <span class="brand-subtitle">Live Broadcast | Free Stream</span>
-        </a>
+<div id="content-locker">
+    <div class="locker-box">
+        <div class="lock-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <h2>স্ট্রিমিং আনলক করুন! 👇👇👇</h2>
+        <p>একটি ছোট এড দেখে এক্ষুনি আনলক করুন প্রিমিয়াম লাইভ স্ট্রিমিং!</p>
+        <button id="fbLockerBtn" class="locker-fb-btn" onclick="startUnlockProcess()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/></svg>
+            এড দেখে আনলক করুন
+        </button>
+        <div id="lockerCountdown" class="countdown-text">ভেরিফাই হচ্ছে... <span id="countNumber">৫</span> সেকেন্ড</div>
+    </div>
+</div>
+
+<div class="social-box" id="socialWidget">
+    <button class="close-social" onclick="document.getElementById('socialWidget').style.display='none';">&times;</button>
+    <a href="https://facebook.com/RayturRahaman" target="_blank" class="social-btn btn-fb">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/></svg>
+        Follow on Facebook
+    </a>
+    <a href="https://t.me/RayturRahaman" target="_blank" class="social-btn btn-tg">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.287 5.906c-.778.324-2.334.994-4.666 2.01-.378.15-.577.298-.595.442-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294.26.006.549-.1.868-.32 2.179-1.471 3.304-2.214 3.374-2.23.05-.012.12-.026.166.016.047.041.042.12.037.141-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8.154 8.154 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629.093.06.183.125.27.187.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.426 1.426 0 0 0-.013-.315.337.337 0 0 0-.114-.217.526.526 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09z"/></svg>
+        Follow on Telegram
+    </a>
+</div>
+
+<div class="server-box">
+            <button id="btn-0" class="server-btn active" onclick="changeServer('https://prod-cdn01-live.toffeelive.com/live/FIFA-2026-5/0/master_2000.m3u8?hdntl=Expires=1782058273~_GO=Generated~URLPrefix=aHR0cHM6Ly9wcm9kLWNkbjAxLWxpdmUudG9mZmVlbGl2ZS5jb20~Signature=AduQTZ94447t2DC_K66ychc1mbhcQTmL5ywLCqndlaxkaG8TvPRHuTXJ7T1HmUuc6Xdjb-jQ6sNsTrvE7wYQK-W0JasG', 0)">
+            Server 1        </button>
+            <button id="btn-1" class="server-btn " onclick="changeServer('https://live.tahmid-tvos.workers.dev/', 1)">
+            Server 2        </button>
+            <button id="btn-2" class="server-btn " onclick="changeServer('https://1nyaler.streamhostingcdn.top/stream/94/index.m3u8', 2)">
+            Server 3        </button>
+            <button id="btn-3" class="server-btn " onclick="changeServer('https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8', 3)">
+            Server 4        </button>
+    </div>
+
+<video id="live-player" class="video-js vjs-default-skin vjs-big-play-centered" controls autoplay muted playsinline preload="auto">
+    <source src="https://prod-cdn01-live.toffeelive.com/live/FIFA-2026-5/0/master_2000.m3u8?hdntl=Expires=1782058273~_GO=Generated~URLPrefix=aHR0cHM6Ly9wcm9kLWNkbjAxLWxpdmUudG9mZmVlbGl2ZS5jb20~Signature=AduQTZ94447t2DC_K66ychc1mbhcQTmL5ywLCqndlaxkaG8TvPRHuTXJ7T1HmUuc6Xdjb-jQ6sNsTrvE7wYQK-W0JasG" type="application/x-mpegURL">
+</video>
+
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<script>
+    // ==========================================
+    // CONTENT LOCKER LOGIC
+    // ==========================================
+    function startUnlockProcess() {
+        // নিচে YOUR_ADSTERRA_DIRECT_LINK_HERE এর জায়গায় আপনার লিংকটি দিন
+        window.open('YOUR_ADSTERRA_DIRECT_LINK_HERE', '_blank'); 
+        document.getElementById('fbLockerBtn').style.display = 'none';
         
-        <div class="nav-actions">
-            <!-- Active Counter Panel -->
-            <div class="live-badge" title="Live Viewers">
-                <span class="pulse"></span>
-                <span><strong id="liveViewerCount">0</strong> <span class="text-hide-mobile">জন লাইভ আছেন</span></span>
-            </div>
-            
-            <!-- Dynamic Theme Changer -->
-            <button class="icon-btn" id="themeToggleBtn" title="Change Theme">
-                <i class="fas fa-moon"></i>
-            </button>
-            
-            <!-- Dashboard Settings Toggle -->
-            <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#adminAuthModal" title="Admin Settings">
-                <i class="fas fa-cog"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <div class="main-container">
-        <div class="row g-3">
-            
-            <!-- Left Workspace: Media and Chating -->
-            <div class="col-xl-8 col-lg-7">
-                <!-- Video Screen -->
-                <div class="player-wrapper">
-                    <video id="hlsVideoPlayer" controls autoplay></video>
-                    <div id="playerStatusOverlay" class="player-status-overlay">লোড হচ্ছে...</div>
-                    <div class="player-overlay">
-                        <button class="icon-btn text-white bg-dark border-secondary" id="pipBtn" title="Picture-in-Picture">
-                            <i class="fas fa-compress-alt"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Live Stream Servers Panel -->
-                <div class="server-bar" id="serverSelectionContainer">
-                    <div class="server-title"><i class="fas fa-satellite-dish text-primary"></i> লাইভ সার্ভার সমূহঃ</div>
-                    <div id="serverButtonsList" class="d-flex gap-2 flex-wrap">
-                        <span class="text-muted small">সার্ভার লোড হচ্ছে...</span>
-                    </div>
-                </div>
-
-                <!-- Chat System Workspace -->
-                <div class="chat-panel">
-                    <div class="chat-header">
-                        <h3><i class="fas fa-comments text-primary"></i> রিয়েল-টাইম লাইভ চ্যাট</h3>
-                        <span class="badge bg-primary rounded-pill">অনলাইন চ্যাট</span>
-                    </div>
-                    
-                    <div class="chat-messages" id="chatMessageWrapper">
-                        <div class="text-center text-muted small mt-4">চ্যাট হিস্টোরি লোড হচ্ছে...</div>
-                    </div>
-                    
-                    <form id="chatForm" class="chat-input-area mt-1">
-                        <input type="text" id="chatName" class="form-control form-control-glass" placeholder="আপনার নাম..." style="max-width: 110px;" required>
-                        <input type="text" id="chatMsg" class="form-control form-control-glass flex-grow-1" placeholder="মেসেজ বা মতামত লিখুন..." required>
-                        <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Right Workspace: Sponsor Promotion -->
-            <div class="col-xl-4 col-lg-5">
-                <div class="agency-card">
-                    <div class="agency-badge">Official Promotion Partner</div>
-                    <h2 class="agency-title">Business Boost Agency</h2>
-                    <p class="agency-desc">আপনার ব্যবসার সেলস এবং ব্র্যান্ড ভ্যালু রকেটের গতিতে বৃদ্ধি করতে আমরা দিচ্ছি প্রিমিয়াম ও হাই-কনভার্সন ডিজিটাল মার্কেটিং সলিউশন।</p>
-                    
-                    <div class="service-list">
-                        <div class="service-item">
-                            <i class="fab fa-facebook-f service-icon"></i>
-                            <span>Facebook Page Boosting & Campaigns</span>
-                        </div>
-                        <div class="service-item">
-                            <i class="fab fa-youtube service-icon"></i>
-                            <span>YouTube Organic Monetization & Reach</span>
-                        </div>
-                        <div class="service-item">
-                            <i class="fas fa-users service-icon"></i>
-                            <span>Targeted Audience & Followers Growth</span>
-                        </div>
-                        <div class="service-item">
-                            <i class="fas fa-plane-departure service-icon"></i>
-                            <span>Travel Agency Marketing Solutions</span>
-                        </div>
-                    </div>
-
-                    <a href="https://t.me/BusinessBoostAgency" target="_blank" class="btn-agency-primary">
-                        <i class="fab fa-telegram-plane"></i> ফ্রি কন্সাল্টেশনের জন্য যোগাযোগ করুন
-                    </a>
-                </div>
-            </div>
-            
-        </div>
-    </div>
-
-    <!-- Modals Interface Block -->
-
-    <!-- Welcome Ad Notice Popup -->
-    <div class="modal fade" id="welcomeAdModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content glass-modal-content" style="border: 2px solid var(--accent-color);">
-                <div class="modal-header border-0 pb-0 justify-content-center">
-                    <h5 class="modal-title fw-bold" style="color: var(--accent-color);"><i class="fas fa-bullhorn me-2"></i> সাইট মেইনটেন্যান্স সাপোর্ট</h5>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <p class="mb-4" style="color: var(--current-text); font-size: 0.95rem; line-height: 1.6;">
-                        আমাদের এই লাইভ স্ট্রিমিং সাইটটি আপনাদের জন্য সম্পূর্ণ <strong>ফ্রি</strong> রাখা হয়েছে। সাইটের সার্ভার বিল ও অন্যান্য আনুষঙ্গিক মেইনটেন্যান্স খরচ বহনের জন্য আপনি চাইলে একটি ছোট বিজ্ঞাপন দেখে আমাদের সহযোগিতা করতে পারেন। 
-                        <br><br>
-                        <small class="text-muted">আপনার মূল্যবান সাপোর্ট আমাদের সাইটটিকে সবসময় সচল রাখতে সাহায্য করবে।</small>
-                    </p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="https://www.example.com/adsterra-direct-link" target="_blank" class="btn btn-primary px-4 rounded-pill fw-bold shadow-sm" onclick="closeWelcomeModal()" style="background: var(--accent-glow); border: none;">
-                            <i class="fas fa-heart me-1"></i> বিজ্ঞাপন দেখে সহযোগিতা করুন
-                        </a>
-                        <button type="button" class="btn btn-outline-secondary px-4 rounded-pill fw-bold" data-bs-dismiss="modal">
-                            বিজ্ঞাপনটি স্কিপ করুন
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 1. Admin Authentication Trigger -->
-    <div class="modal fade" id="adminAuthModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content glass-modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title"><i class="fas fa-lock me-2 text-primary"></i>Admin Login</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="adminLoginForm">
-                        <input type="password" id="adminPassword" class="form-control form-control-glass mb-3" placeholder="পাসওয়ার্ড লিখুন..." required>
-                        <button type="submit" class="btn btn-primary w-100 rounded-3">লগইন করুন</button>
-                    </form>
-                    <div id="loginError" class="text-danger small mt-2 d-none">ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. Admin Settings Control Hub -->
-    <div class="modal fade" id="adminDashboardModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content glass-modal-content">
-                <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
-                    <h5 class="modal-title"><i class="fas fa-server me-2 text-primary"></i>Server Management Hub</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="adminNotification" class="alert alert-info small py-2 d-none"></div>
-                    
-                    <!-- Add Stream Server Section -->
-                    <form id="addServerForm" class="row g-2 mb-4">
-                        <div class="col-md-3">
-                            <input type="text" id="newServerName" class="form-control form-control-glass" placeholder="সার্ভারের নাম" required>
-                        </div>
-                        <div class="col-md-7">
-                            <input type="url" id="newServerUrl" class="form-control form-control-glass" placeholder="M3U8 / HLS Stream লিংক দিন..." required>
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-success w-100 h-100 rounded-3"><i class="fas fa-plus"></i> যুক্ত করুন</button>
-                        </div>
-                    </form>
-
-                    <!-- Active Server Configuration List -->
-                    <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
-                        <table class="table admin-table mb-0">
-                            <thead>
-                                <tr>
-                                    <th>সার্ভারের নাম</th>
-                                    <th>লাইভ স্ট্রিম ইউআরএল</th>
-                                    <th class="text-end">অ্যাকশন</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminServerList">
-                                <!-- JS Auto Rendered Items -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-secondary px-4 rounded-3" data-bs-dismiss="modal"><i class="fas fa-sign-out-alt me-1"></i> বন্ধ করুন</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts Module Block -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Real-time Database Core Firebase Module Integrations -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // ==========================================
-        // 1. Core Configurations
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyBzoFA-IKTGJAGDTwGdKKGeFflAnQNkwOQ",
-            authDomain: "fifaworldcup2026-c7fed.firebaseapp.com",
-            projectId: "fifaworldcup2026-c7fed",
-            storageBucket: "fifaworldcup2026-c7fed.firebasestorage.app",
-            messagingSenderId: "571391740006",
-            appId: "1:571391740006:web:719b1b965880ecb584c5a7",
-            measurementId: "G-BQVNP1KC3E"
-        };
-
-        const appId = 'fifaworldcup2026-c7fed';
-        const serversCollectionPath = `artifacts/${appId}/public/data/servers`;
-        const chatCollectionPath = `artifacts/${appId}/public/data/chatMessages`;
-
-        let app, auth, db, currentUser = null;
-        let hlsEngine = null;
-        let selectedServerId = null;
-
-        // Default Primary Server
-        const defaultPrimaryServer = {
-            id: 'default_server_1',
-            name: 'Server 1 (Main HD)',
-            url: 'https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8',
-            createdAt: 1000000000000, 
-            isPrimary: true
-        };
-
-        let serversList = [];
-
-        // DOM Elements Binding
-        const videoElement = document.getElementById('hlsVideoPlayer');
-        const playerStatus = document.getElementById('playerStatusOverlay');
-        const serverButtonsContainer = document.getElementById('serverButtonsList');
-        const chatMessageWrapper = document.getElementById('chatMessageWrapper');
-        const viewerCountElement = document.getElementById('liveViewerCount');
-        const adminServerListUI = document.getElementById('adminServerList');
-        const adminNotif = document.getElementById('adminNotification');
-
-        // ==========================================
-        // Local Storage Fallback Setup
-        // ==========================================
-        function loadLocalServers() {
-            const saved = localStorage.getItem('fifa_local_servers');
-            if(saved) {
-                return JSON.parse(saved);
+        var cdDiv = document.getElementById('lockerCountdown');
+        cdDiv.style.display = 'block';
+        var countSpan = document.getElementById('countNumber');
+        
+        var count = 5;
+        var bnNumbers = ['০', '১', '২', '৩', '৪', '৫'];
+        
+        var timer = setInterval(function() {
+            count--;
+            countSpan.innerText = bnNumbers[count];
+            if(count <= 0) {
+                clearInterval(timer);
+                localStorage.setItem('isPremiumUnlocked', 'true');
+                location.reload(); 
             }
-            return [defaultPrimaryServer];
+        }, 1000);
+    }
+
+    // ==========================================
+    // PLAYER LOGIC
+    // ==========================================
+    var serverList = ["https:\/\/prod-cdn01-live.toffeelive.com\/live\/FIFA-2026-5\/0\/master_2000.m3u8?hdntl=Expires=1782058273~_GO=Generated~URLPrefix=aHR0cHM6Ly9wcm9kLWNkbjAxLWxpdmUudG9mZmVlbGl2ZS5jb20~Signature=AduQTZ94447t2DC_K66ychc1mbhcQTmL5ywLCqndlaxkaG8TvPRHuTXJ7T1HmUuc6Xdjb-jQ6sNsTrvE7wYQK-W0JasG","https:\/\/live.tahmid-tvos.workers.dev\/","https:\/\/1nyaler.streamhostingcdn.top\/stream\/94\/index.m3u8","https:\/\/1nyaler.streamhostingcdn.top\/stream\/32\/index.m3u8"];
+    var currentServerIndex = 0;
+    var isSwitching = false; 
+
+    var player = videojs('live-player', {
+        html5: { vhs: { overrideNative: true, allowCrossfileNaming: true } },
+        muted: true, // Forces muted for initial autoplay reliability
+        controlBar: {
+            children: [
+                'playToggle',
+                'volumePanel',
+                'liveDisplay', 
+                'pictureInPictureToggle', 
+                'fullscreenToggle'
+            ]
+        }
+    });
+
+    player.ready(function() {
+        if (!localStorage.getItem('isPremiumUnlocked')) {
+            document.getElementById('content-locker').style.display = 'flex';
+            player.pause(); 
+        } else {
+            document.getElementById('content-locker').style.display = 'none';
+            // Attempt to unmute after unlocking if browser allows
+            player.muted(true);
+            player.play();
         }
 
-        function saveLocalServers(list) {
-            localStorage.setItem('fifa_local_servers', JSON.stringify(list));
-        }
+        var liveDisplay = document.querySelector('.vjs-live-control');
+        if(liveDisplay) {
+            var counterHTML = `
+                <div class="vjs-view-counter" title="Watching Now">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    <span id="liveViewerCount">1.2K</span>
+                </div>
+            `;
+            liveDisplay.insertAdjacentHTML('afterend', counterHTML);
 
-        // Initialize from local storage first to prevent empty screen
-        serversList = loadLocalServers();
-        renderServerButtons();
-        renderAdminServerList();
-
-        // ==========================================
-        // Firebase Initialization
-        // ==========================================
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            
-            // Authenticate Anonymously
-            signInAnonymously(auth).then((userCredential) => {
-                currentUser = userCredential.user;
-                initializeRealtimeListeners();
-            }).catch((error) => {
-                console.warn("Firebase Auth Error, using Local Storage mode: ", error);
-            });
-        } catch(e) {
-            console.warn("Firebase Init Failed, using Local Storage mode: ", e);
-        }
-
-        simulateLiveViewers();
-
-        // ==========================================
-        // 2. Realtime Synchronization Processes
-        // ==========================================
-        function initializeRealtimeListeners() {
-            if(!currentUser || !db) return;
-
-            // Sync Servers Database
-            onSnapshot(collection(db, ...serversCollectionPath.split('/')), 
-                async (snapshot) => {
-                    let tempServers = [];
-                    snapshot.forEach(doc => {
-                        tempServers.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    // Seed default server if database is empty
-                    if (tempServers.length === 0) {
-                        try {
-                            const initialDocRef = doc(collection(db, ...serversCollectionPath.split('/')));
-                            await setDoc(initialDocRef, defaultPrimaryServer);
-                            return; 
-                        } catch(err) {
-                            console.error("Failed to seed primary server: ", err);
-                        }
-                    }
-                    
-                    tempServers.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-                    serversList = tempServers;
-                    saveLocalServers(serversList); // Update Local Fallback
-                    
-                    renderServerButtons();
-                    renderAdminServerList();
-                },
-                (error) => console.error("Error fetching servers: ", error)
-            );
-
-            // Sync Chat Messages
-            onSnapshot(collection(db, ...chatCollectionPath.split('/')), 
-                (snapshot) => {
-                    let messages = [];
-                    snapshot.forEach(doc => {
-                        messages.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    messages.sort((a, b) => {
-                        const tA = a.timestamp ? a.timestamp.toMillis() : Date.now();
-                        const tB = b.timestamp ? b.timestamp.toMillis() : Date.now();
-                        return tA - tB;
-                    });
-                    
-                    renderChatMessages(messages);
-                },
-                (error) => console.error("Error syncing chats: ", error)
-            );
-        }
-
-        // ==========================================
-        // 3. Dynamic DOM Generation
-        // ==========================================
-        function renderServerButtons() {
-            serverButtonsContainer.innerHTML = '';
-            
-            serversList.forEach((server, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'server-btn';
-                btn.textContent = server.name;
-                btn.setAttribute('data-id', server.id);
-                btn.onclick = () => playStream(server.url, server.id);
-                
-                if(selectedServerId === server.id || (!selectedServerId && index === 0)) {
-                    btn.classList.add('active');
+            // Formats number to 1K, 2.5K etc
+            function formatK(num) {
+                if (num >= 1000) {
+                    return (num / 1000).toFixed(1) + 'K';
                 }
-                
-                serverButtonsContainer.appendChild(btn);
-            });
-        }
+                return num.toString();
+            }
 
-        function renderChatMessages(messages) {
-            chatMessageWrapper.innerHTML = '';
+            let baseViewers = 1250 + Math.floor(Math.random() * 500); // Starts between 1.2K to 1.7K
+            const viewerEl = document.getElementById('liveViewerCount');
             
-            if(messages.length === 0) {
-                chatMessageWrapper.innerHTML = '<div class="text-center text-muted small mt-4">এখনো কোনো মতামত শেয়ার করা হয়নি। প্রথম মেসেজটি আপনার হোক!</div>';
-                return;
+            function updateViewers() {
+                let change = Math.floor(Math.random() * 60) - 20; // Random up/down
+                baseViewers += change;
+                if(viewerEl) viewerEl.innerText = formatK(baseViewers);
+                setTimeout(updateViewers, 3000 + Math.random() * 4000); 
             }
+            updateViewers();
+        }
+    });
 
-            messages.forEach(msg => {
-                const timeStr = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'}) : 'এইমাত্র';
-                
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'chat-msg';
-                msgDiv.innerHTML = `
-                    <div class="chat-sender">
-                        <span>${escapeHtml(msg.senderName)}</span>
-                        <span class="chat-time">${timeStr}</span>
-                    </div>
-                    <div class="chat-text">${escapeHtml(msg.text)}</div>
-                `;
-                chatMessageWrapper.appendChild(msgDiv);
-            });
-            
-            chatMessageWrapper.scrollTop = chatMessageWrapper.scrollHeight;
+    function changeServer(url, index) {
+        if (index === 0 && currentServerIndex !== 0) {
+            window.location.reload(); 
+            return;
         }
 
-        function escapeHtml(string) {
-            return (string || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        // ==========================================
-        // 4. Robust Video Playback Controllers (HLS)
-        // ==========================================
-        function playStream(url, serverId) {
-            selectedServerId = serverId;
-            document.querySelectorAll('.server-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.getAttribute('data-id') === serverId) btn.classList.add('active');
-            });
-
-            playerStatus.style.display = 'block';
-            playerStatus.textContent = "সার্ভার লোড হচ্ছে...";
-
-            if (hlsEngine) {
-                hlsEngine.destroy();
-                hlsEngine = null;
-            }
-
-            if (Hls.isSupported()) {
-                hlsEngine = new Hls({ maxMaxBufferLength: 30 });
-                hlsEngine.loadSource(url);
-                hlsEngine.attachMedia(videoElement);
-                
-                hlsEngine.on(Hls.Events.MANIFEST_PARSED, () => {
-                    playerStatus.style.display = 'none';
-                    videoElement.play().catch(e => console.log("Stream autoplay blocked."));
-                });
-
-                // Error Handling for Dead Links or CORS Block
-                hlsEngine.on(Hls.Events.ERROR, function (event, data) {
-                    if (data.fatal) {
-                        switch (data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                playerStatus.textContent = "নেটওয়ার্ক সমস্যা! লিংকটি কাজ করছে না।";
-                                hlsEngine.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                hlsEngine.recoverMediaError();
-                                break;
-                            default:
-                                playerStatus.textContent = "এই সার্ভার লিংকটি বর্তমানে বন্ধ আছে বা সাপোর্ট করছে না।";
-                                hlsEngine.destroy();
-                                break;
-                        }
-                    }
-                });
-
-            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = url;
-                videoElement.addEventListener('loadedmetadata', () => {
-                    playerStatus.style.display = 'none';
-                    videoElement.play();
-                });
-                videoElement.addEventListener('error', () => {
-                    playerStatus.style.display = 'block';
-                    playerStatus.textContent = "ব্রাউজার এই লিংকটি সাপোর্ট করছে না!";
-                });
-            }
-        }
-
-        const pipBtn = document.getElementById('pipBtn');
-        if (!document.pictureInPictureEnabled) pipBtn.style.display = 'none';
-        pipBtn.addEventListener('click', async () => {
-            try {
-                if (videoElement !== document.pictureInPictureElement) {
-                    await videoElement.requestPictureInPicture();
-                } else {
-                    await document.exitPictureInPicture();
-                }
-            } catch (err) {
-                console.error("PiP trigger error: ", err);
-            }
+        currentServerIndex = index;
+        isSwitching = true; 
+        
+        document.querySelectorAll('.server-btn').forEach(btn => btn.classList.remove('active'));
+        var activeBtn = document.getElementById('btn-' + index);
+        if(activeBtn) activeBtn.classList.add('active');
+        
+        player.error(null); 
+        player.pause();
+        
+        player.src({ src: url, type: 'application/x-mpegURL' });
+        player.load(); 
+        
+        player.play().then(function() {
+            isSwitching = false;
+        }).catch(function(error) {
+            console.log("Autoplay blocked or failed: ", error);
+            setTimeout(function() { isSwitching = false; }, 2500);
         });
+    }
 
-        // ==========================================
-        // 5. Send Comment Operations
-        // ==========================================
-        document.getElementById('chatForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nameInput = document.getElementById('chatName');
-            const msgInput = document.getElementById('chatMsg');
-            const name = nameInput.value.trim();
-            const text = msgInput.value.trim();
-            
-            if(!name || !text) return;
-
-            if(currentUser && db) {
-                try {
-                    await addDoc(collection(db, ...chatCollectionPath.split('/')), {
-                        senderName: name,
-                        text: text,
-                        uid: currentUser.uid,
-                        timestamp: new Date() 
-                    });
-                    msgInput.value = ''; 
-                } catch(err) {
-                    console.error("Failed to post comment: ", err);
-                    alert("কমেন্ট করতে সমস্যা হচ্ছে! ফায়ারবেস রুলস চেক করুন।");
-                }
-            } else {
-                alert("লাইভ চ্যাটের জন্য ফায়ারবেস সঠিকভাবে কানেক্ট হয়নি!");
-            }
-        });
-
-        // ==========================================
-        // 6. Admin Panel Flow (Add/Delete Server)
-        // ==========================================
-        const adminPass = "iptv@1122";
-        const adminAuthModal = new bootstrap.Modal(document.getElementById('adminAuthModal'));
-        const adminDashboardModal = new bootstrap.Modal(document.getElementById('adminDashboardModal'));
-
-        function showAdminNotif(msg, isError=false) {
-            adminNotif.className = `alert ${isError ? 'alert-warning' : 'alert-success'} small py-2`;
-            adminNotif.textContent = msg;
-            adminNotif.classList.remove('d-none');
-            setTimeout(() => adminNotif.classList.add('d-none'), 4000);
+    player.on('error', function() {
+        if (isSwitching) return; 
+        var nextServerIndex = currentServerIndex + 1;
+        if (nextServerIndex < serverList.length) {
+            isSwitching = true;
+            setTimeout(function() {
+                changeServer(serverList[nextServerIndex], nextServerIndex);
+            }, 3000);
         }
+    });
+</script>
 
-        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const inputPass = document.getElementById('adminPassword').value;
-            const errorBlock = document.getElementById('loginError');
-            
-            if(inputPass === adminPass) {
-                errorBlock.classList.add('d-none');
-                document.getElementById('adminPassword').value = '';
-                adminAuthModal.hide();
-                adminDashboardModal.show();
-            } else {
-                errorBlock.classList.remove('d-none');
-            }
-        });
-
-        document.getElementById('addServerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('newServerName').value.trim();
-            const url = document.getElementById('newServerUrl').value.trim();
-            if(!name || !url) return;
-
-            const newServerObj = {
-                id: 'server_' + Date.now(),
-                name: name,
-                url: url,
-                createdAt: Date.now(),
-                isPrimary: false
-            };
-
-            // Optimistic Local Save (Works immediately even if Firebase fails)
-            serversList.push(newServerObj);
-            saveLocalServers(serversList);
-            renderServerButtons();
-            renderAdminServerList();
-            
-            document.getElementById('newServerName').value = '';
-            document.getElementById('newServerUrl').value = '';
-
-            // Try Firebase Sync
-            if(currentUser && db) {
-                try {
-                    await addDoc(collection(db, ...serversCollectionPath.split('/')), newServerObj);
-                    showAdminNotif("সার্ভার সফলভাবে যুক্ত হয়েছে!");
-                } catch(err) {
-                    showAdminNotif("ফায়ারবেস কাজ করছে না, তাই অফলাইনে ব্রাউজারে সেভ হয়েছে!", true);
-                    console.error("Server Insertion Failed: ", err);
-                }
-            } else {
-                showAdminNotif("ফায়ারবেস কানেক্ট নেই, অফলাইনে সেভ হয়েছে!", true);
-            }
-        });
-
-        function renderAdminServerList() {
-            adminServerListUI.innerHTML = '';
-            serversList.forEach(server => {
-                const tr = document.createElement('tr');
-                const actionBtnHtml = `
-                    <button class="btn btn-sm btn-danger rounded-3" data-id="${server.id}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                `;
-
-                tr.innerHTML = `
-                    <td class="align-middle fw-bold">${escapeHtml(server.name)} ${server.isPrimary ? '<span class="badge bg-primary ms-1">Primary</span>' : ''}</td>
-                    <td class="align-middle text-truncate" style="max-width: 180px;">${escapeHtml(server.url)}</td>
-                    <td class="text-end">
-                        ${actionBtnHtml}
-                    </td>
-                `;
-                
-                tr.querySelector('button').addEventListener('click', async (e) => {
-                    const id = e.currentTarget.getAttribute('data-id');
-                    if(confirm("আপনি কি নিশ্চিত যে এই লাইভ সার্ভারটি ডিলিট করতে চান?")) {
-                        
-                        // Delete locally first
-                        serversList = serversList.filter(s => s.id !== id);
-                        saveLocalServers(serversList);
-                        renderServerButtons();
-                        renderAdminServerList();
-
-                        // Sync with Firebase
-                        if(currentUser && db) {
-                            try {
-                                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'servers', id));
-                                showAdminNotif("সার্ভার সফলভাবে ডিলিট হয়েছে!");
-                            } catch(err) {
-                                console.error("Server deletion error: ", err);
-                            }
-                        }
-                    }
-                });
-                
-                adminServerListUI.appendChild(tr);
-            });
-        }
-
-        // ==========================================
-        // 7. Theme Control System (Auto/Manual)
-        // ==========================================
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        const savedTheme = localStorage.getItem('fifa_theme');
-        let isLight = false;
-
-        if (savedTheme === 'light' || (!savedTheme && !prefersDark.matches)) {
-            isLight = true;
-            document.body.classList.add('light-theme');
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-
-        themeToggleBtn.addEventListener('click', () => {
-            isLight = !isLight;
-            if(isLight) {
-                document.body.classList.add('light-theme');
-                localStorage.setItem('fifa_theme', 'light');
-                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                document.body.classList.remove('light-theme');
-                localStorage.setItem('fifa_theme', 'dark');
-                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        });
-
-        // ==========================================
-        // 8. Simulated Realistic Live Counter
-        // ==========================================
-        function simulateLiveViewers() {
-            setInterval(() => {
-                const base = 4800;
-                const variance = Math.floor(Math.random() * 200) - 80; 
-                let viewers = base + variance;
-                
-                const currentHour = new Date().getHours();
-                if(currentHour >= 18 && currentHour <= 23) {
-                    viewers += 4000; 
-                }
-                
-                viewerCountElement.textContent = viewers.toLocaleString('bn-BD');
-            }, 6000);
-            
-            viewerCountElement.textContent = (4800 + Math.floor(Math.random() * 120)).toLocaleString('bn-BD');
-        }
-
-        // ==========================================
-        // 9. Initial Load Handlers
-        // ==========================================
-        window.closeWelcomeModal = function() {
-            const modalEl = document.getElementById('welcomeAdModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if(modalInstance) modalInstance.hide();
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeAdModal'));
-            welcomeModal.show();
-
-            // Load primary video if exist in local storage
-            if(!hlsEngine && !videoElement.src && serversList.length > 0) {
-                playStream(serversList[0].url, serversList[0].id);
-            }
-        });
-
-    </script>
+<script src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" xintegrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"1f7d8a56c34342eeb554f35d27094085","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
